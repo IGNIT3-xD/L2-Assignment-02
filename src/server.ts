@@ -1,6 +1,13 @@
 import { config } from './config'
 import app from './app';
+import { initDB } from './db';
 
-app.listen(config.PORT, () => {
-    console.log(`Example app listening on port ${config.PORT}`)
-})
+const main = async () => {
+    await initDB();
+
+    app.listen(config.PORT, () => {
+        console.log(`Server running on port ${config.PORT}`)
+    })
+}
+
+main()
