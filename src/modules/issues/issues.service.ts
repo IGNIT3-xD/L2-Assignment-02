@@ -1,5 +1,6 @@
 import { pool } from "../../db";
 import type { Issue } from "../../types/issue";
+import type { Sort } from "../../types/sort";
 import type { User } from "../../types/user";
 import { AppError } from "../../utils/appError";
 
@@ -22,8 +23,36 @@ export const createIssueQuery = async ({ title, description, type, reporter_id }
     return result.rows[0];
 }
 
-export const getAllIssuesQuery = async () => {
-    const result = await pool.query(`SELECT * FROM issues`);
+
+const ALLOWED_SORT = ['newest', 'oldest']
+const ALLOWED_TYPE = ['bug', 'feature_request']
+const ALLOWED_STATUS = ['open', 'in_progress', 'resolved']
+
+export const getAllIssuesQuery = async (
+    sort: string = "newest",
+    type?: string,
+    status?: string
+) => {
+    if (!ALLOWED_SORT.includes(sort))
+        throw new AppError('Invalid sort value', 400)
+
+    if (type && !ALLOWED_TYPE.includes(type))
+        throw new AppError('Invalid type value', 400)
+
+    if (status && !ALLOWED_STATUS.includes(status))
+        throw new AppError('Invalid status value', 400)
+
+    const order = sort === 'newest' ? 'DESC' : 'ASC'
+
+    const result = await pool.query(`
+        SELECT * FROM issues
+        WHERE ($1::text IS NULL OR type = $1)
+          AND ($2::text IS NULL OR status = $2)
+        ORDER BY created_at ${order}
+    `, [type ?? null, status ?? null])
+
+
+    // const result = await pool.query(`SELECT * FROM issues`);
 
     const reporters_ids = result.rows.map(issue => issue.reporter_id);
     // console.log(reporters_ids);

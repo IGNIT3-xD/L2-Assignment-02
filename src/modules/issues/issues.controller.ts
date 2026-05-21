@@ -16,7 +16,9 @@ export const createIssue = async (req: Request, res: Response, next: NextFunctio
 
 export const getAllIssues = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await getAllIssuesQuery()
+        const { sort, type, status } = req.query
+
+        const result = await getAllIssuesQuery(sort as string, type as string, status as string)
         sendResponse(res, 200, true, "", result)
     }
     catch (error) {
