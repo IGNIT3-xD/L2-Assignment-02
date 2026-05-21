@@ -9,5 +9,7 @@ dotenv.config({
 export const config = {
     PORT: process.env.PORT as number | undefined,
     DB: process.env.DB as string,
-    NODE_ENV: process.env.NODE_ENV as string
+    NODE_ENV: process.env.NODE_ENV as string,
+    JWT_ACCESS: process.env.JWT_ACCESS as string,
+    JWT_REFRESH: process.env.JWT_REFRESH as string
 }

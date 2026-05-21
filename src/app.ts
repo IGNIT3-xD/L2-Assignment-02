@@ -9,7 +9,7 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Hello World!')
 })
 
-app.use('/api/auth/signup', userRoute)
+app.use('/api/auth', userRoute)
 
 app.use(globalErrorHandler)
 export default app;
