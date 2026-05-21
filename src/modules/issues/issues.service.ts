@@ -20,3 +20,23 @@ export const createIssueQuery = async ({ title, description, type, reporter_id }
 
     return result.rows[0];
 }
+
+export const getAllIssuesQuery = async () => {
+    const result = await pool.query(`SELECT * FROM issues`);
+
+    const reporters_ids = result.rows.map(issue => issue.reporter_id);
+    // console.log(reporters_ids);
+
+    const reporterData = await pool.query(`SELECT id, name, role FROM users WHERE id = ANY($1)`, [reporters_ids]);
+    // console.log(reporterData.rows);
+
+    const reporterMap = new Map(reporterData.rows.map(user => [user.id, user]))
+    // console.log(reporterMap);
+
+    const issues = result.rows.map(({ reporter_id, ...issue }) => ({
+        ...issue,
+        reporter: reporterMap.get(reporter_id)
+    }))
+
+    return issues
+}
