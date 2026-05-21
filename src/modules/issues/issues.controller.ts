@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { createIssueQuery, getAllIssuesQuery } from "./issues.service";
+import { createIssueQuery, getAllIssuesQuery, getSingleIssueQuery } from "./issues.service";
 import { sendResponse } from "../../utils/sendResponse";
 
 export const createIssue = async (req: Request, res: Response, next: NextFunction) => {
@@ -17,6 +17,17 @@ export const createIssue = async (req: Request, res: Response, next: NextFunctio
 export const getAllIssues = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = await getAllIssuesQuery()
+        sendResponse(res, 200, true, "", result)
+    }
+    catch (error) {
+        next(error)
+    }
+}
+
+export const getSingleIssue = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id = parseInt(req.params.id as string)
+        const result = await getSingleIssueQuery(id)
         sendResponse(res, 200, true, "", result)
     }
     catch (error) {

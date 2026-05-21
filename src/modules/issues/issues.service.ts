@@ -1,5 +1,6 @@
 import { pool } from "../../db";
 import type { Issue } from "../../types/issue";
+import type { User } from "../../types/user";
 import { AppError } from "../../utils/appError";
 
 export const createIssueQuery = async ({ title, description, type, reporter_id }: Issue) => {
@@ -39,4 +40,19 @@ export const getAllIssuesQuery = async () => {
     }))
 
     return issues
+}
+
+export const getSingleIssueQuery = async (id: number) => {
+    const result = await pool.query(`SELECT * FROM issues WHERE id = $1`, [id])
+    if (result.rowCount === 0)
+        throw new AppError('Issue not found', 404)
+
+    const { reporter_id, ...issue } = result.rows[0];
+
+    const reporterData = await pool.query(`SELECT id, name, role FROM users WHERE id = $1`, [reporter_id])
+
+    return {
+        ...issue,
+        reporter: reporterData.rows[0]
+    }
 }
