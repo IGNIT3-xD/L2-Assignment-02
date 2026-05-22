@@ -84,18 +84,18 @@ export const getSingleIssueQuery = async (id: number) => {
     }
 }
 
-export const updateIssueQuery = async ({ id, title, description, type }: Issue) => {
+export const updateIssueQuery = async ({ id, title, description, type, status }: Issue) => {
 
     const result = await pool.query(`
         UPDATE issues SET
             title = COALESCE($1, title), 
             description = COALESCE($2, description),
             type = COALESCE($3, type),
-            status = 'in_progress',
+            status = COALESCE($4, 'in_progress'),
             updated_at = NOW()
-        WHERE id = $4 
+        WHERE id = $5 
         RETURNING *
-    `, [title, description, type, id])
+    `, [title, description, type, status, id])
 
     if (result.rowCount === 0)
         throw new AppError('No issue found', 404)
@@ -104,6 +104,10 @@ export const updateIssueQuery = async ({ id, title, description, type }: Issue) 
 }
 
 export const deleteIssueQuery = async (id: number) => {
+    const issue = await pool.query(`SELECT * FROM issues WHERE id=$1`, [id])
+    if (issue.rowCount === 0)
+        throw new AppError("Issue not found", 404)
+
     const result = await pool.query(`DELETE FROM issues WHERE id=$1`, [id])
-    return null
+    return result
 }

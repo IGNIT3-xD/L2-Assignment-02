@@ -5,7 +5,7 @@ import { sendResponse } from "../../utils/sendResponse";
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = await createUserQuery(req.body)
-        sendResponse(res, 201, true, "User created successfully", result)
+        sendResponse(res, 201, true, "User registered successfully", result)
     }
     catch (error) {
         next(error)

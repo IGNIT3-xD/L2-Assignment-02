@@ -75,10 +75,6 @@ export const deleteIssue = async (req: Request, res: Response, next: NextFunctio
         const id = parseInt(req.params.id as string)
 
         const result = await deleteIssueQuery(id)
-        
-        if (!result)
-            throw new AppError("Issue not found", 404)
-
         sendResponse(res, 200, true, "Issue deleted successfully")
     }
     catch (error) {
