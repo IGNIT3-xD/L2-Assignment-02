@@ -85,3 +85,22 @@ export const getSingleIssueQuery = async (id: number) => {
         reporter: reporterData.rows[0]
     }
 }
+
+export const updateIssueQuery = async ({ id, title, description, type }: Issue) => {
+
+    const result = await pool.query(`
+        UPDATE issues SET
+            title = COALESCE($1, title), 
+            description = COALESCE($2, description),
+            type = COALESCE($3, type),
+            status = 'in_progress',
+            updated_at = NOW()
+        WHERE id = $4 
+        RETURNING *
+    `, [title, description, type, id])
+
+    if (result.rowCount === 0)
+        throw new AppError('No issue found', 404)
+
+    return result.rows[0]
+}

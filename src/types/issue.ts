@@ -7,4 +7,6 @@ export type Issue = {
     reporter_id: number;
     created_at?: Date;
     updated_at?: Date;
+    role?: string,
+    user_id?: number
 }
