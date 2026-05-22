@@ -1,7 +1,5 @@
 import { pool } from "../../db";
 import type { Issue } from "../../types/issue";
-import type { Sort } from "../../types/sort";
-import type { User } from "../../types/user";
 import { AppError } from "../../utils/appError";
 
 export const createIssueQuery = async ({ title, description, type, reporter_id }: Issue) => {
@@ -103,4 +101,9 @@ export const updateIssueQuery = async ({ id, title, description, type }: Issue) 
         throw new AppError('No issue found', 404)
 
     return result.rows[0]
+}
+
+export const deleteIssueQuery = async (id: number) => {
+    const result = await pool.query(`DELETE FROM issues WHERE id=$1`, [id])
+    return null
 }

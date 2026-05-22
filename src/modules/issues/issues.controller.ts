@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { createIssueQuery, getAllIssuesQuery, getSingleIssueQuery, updateIssueQuery } from "./issues.service";
+import { createIssueQuery, deleteIssueQuery, getAllIssuesQuery, getSingleIssueQuery, updateIssueQuery } from "./issues.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { pool } from "../../db";
 import { AppError } from "../../utils/appError";
@@ -64,6 +64,22 @@ export const updateIssue = async (req: Request, res: Response, next: NextFunctio
 
         const result = await updateIssueQuery({ ...req.body, id })
         sendResponse(res, 200, true, "Issue updated successfully", result)
+    }
+    catch (error) {
+        next(error)
+    }
+}
+
+export const deleteIssue = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id = parseInt(req.params.id as string)
+
+        const result = await deleteIssueQuery(id)
+        
+        if (!result)
+            throw new AppError("Issue not found", 404)
+
+        sendResponse(res, 200, true, "Issue deleted successfully")
     }
     catch (error) {
         next(error)
